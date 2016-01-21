@@ -37,3 +37,6 @@ Same than method `/api/v1/metadata`
 
 ### POST /refresh-url
 Same than method `/api/v1/metadata/refresh` but admits just one url via `url` query parameter.
+
+### GET /favicon
+Not implemented (yet)

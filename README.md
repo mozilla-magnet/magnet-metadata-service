@@ -23,4 +23,4 @@ But also adds some extra services/ideas to complement the initial idea like:
 
 ## Web Service end points
 
-[Here](API.md) you can find the api for this web service in [API Blueprint](https://apiblueprint.org) format.
+[Here](API.md) you can find the api for this web service.

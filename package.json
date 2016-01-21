@@ -4,6 +4,7 @@
   "description": "Physical Web (Alternative) web service implementation",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "mocha"
   },
   "keywords": [
@@ -15,6 +16,7 @@
   "author": "Francisco Jordano <francisco@jordano.es>",
   "license": "MPL-2.0",
   "dependencies": {
+    "body-parser": "^1.14.2",
     "express": "^4.13.3"
   }
 }

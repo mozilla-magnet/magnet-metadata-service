@@ -1,6 +1,6 @@
-# (Another) Physical Web Web Service
+# (Another) Physical-Web Web Service
 
-This project is an implementation in Nodejs of a [Physical Web](https://google.github.io/physical-web/) metadata service.
+This project is an implementation in Nodejs of a [Physical-Web](https://google.github.io/physical-web/) metadata service.
 
 It's purpose is to parse and analyze the content of the urls to provide clients with extra information.
 

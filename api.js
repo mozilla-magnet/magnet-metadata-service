@@ -6,33 +6,29 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.post(/^\/metadata(\/)?$/, function(req, res) {
-  const requestBody = req.body;
-
-  if (!validatePostRequest(req, res)) {
+app.use(function(req, res, next) {
+  if (req.method == "POST") {
+    if (validatePostRequest(req, res)) {
+      next();
+    }
     return;
   }
 
+  next();
+});
+
+app.post(/^\/metadata(\/)?$/, function(req, res) {
+  const requestBody = req.body;
   res.json(requestBody);
 });
 
 app.post(/^\/metadata\/raw(\/)?$/, function(req, res) {
   const requestBody = req.body;
-
-  if (!validatePostRequest(req, res)) {
-    return;
-  }
-
   res.json(requestBody);
 });
 
 app.post(/^\/metadata\/refresh$/, function(req, res) {
   const requestBody = req.body;
-
-  if (!validatePostRequest(req, res) {
-    return;
-  }
-
   res.json(requestBody);
 });
 

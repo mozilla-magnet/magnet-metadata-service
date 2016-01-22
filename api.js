@@ -26,6 +26,16 @@ app.post(/^\/metadata\/raw(\/)?$/, function(req, res) {
   res.json(requestBody);
 });
 
+app.post(/^\/metadata\/refresh$/, function(req, res) {
+  const requestBody = req.body;
+
+  if (!validatePostRequest(req, res) {
+    return;
+  }
+
+  res.json(requestBody);
+});
+
 function validatePostRequest(req, res) {
 
   // If the content-type header is not 'application/json', the request body parser

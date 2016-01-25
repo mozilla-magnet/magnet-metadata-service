@@ -55,6 +55,12 @@ module.exports = {
       }
     });
 
+    // Check if we need to add the w3c manifest parser
+    if (doc.querySelector('link[rel="manifest"]')) {
+      const ManifestParser = require('./manifest.js');
+      parsers.push(ManifestParser);
+    }
+
     return parsers.reduce((current, next) => {
       return current.then((metadata) => {
         return next.execute(url, doc, metadata);

@@ -14,7 +14,7 @@ function getManifestUrl(url, manifest) {
     url = url.slice(0, lastSlashIndex);
   }
 
-  return url + '/manifest.json';
+  return url + '/' + manifest;
 }
 
 var ManifestParser = {

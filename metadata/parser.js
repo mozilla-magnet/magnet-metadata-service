@@ -44,14 +44,16 @@ module.exports = {
     // if (url.contains('youtube')) {
     //   parsers.push(YouTubeParser) 
     // }
-    // parsers.push({
-    //   execute: function(url, doc, metadata) {
-    //     metadata.watermark = {
-    //       time: Date.now()
-    //     };
-    //     return Promise.resolve(metadata);
-    //   }
-    // });
+    // Below you have a simple example:
+    
+    parsers.push({
+      execute: function(url, doc, metadata) {
+        metadata.watermark = {
+          time: Date.now()
+        };
+        return Promise.resolve(metadata);
+      }
+    });
 
     return parsers.reduce((current, next) => {
       return current.then((metadata) => {

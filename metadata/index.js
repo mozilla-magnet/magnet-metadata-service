@@ -14,8 +14,8 @@ function process(url) {
 
     return fetchAndParse(url);
   }).then((metadata) => {
-    return postProcess(url, metadata).then(() => {
-      return Promise.resolve(metadata);
+    return postProcess(url, metadata).then((result) => {
+      return Promise.resolve(result);
     });
   });
 }
@@ -25,7 +25,7 @@ function preProcess(url) {
 }
 
 function postProcess(url, data) {
-  return Promise.resolve(true);
+  return Promise.resolve(data);
 }
 
 /**

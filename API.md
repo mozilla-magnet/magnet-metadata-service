@@ -12,9 +12,27 @@ The service as well will omit metainformation extracted that consider not releva
 
 + Request body
 ```
-  [
-    {"url": "<physical url>"},...
-  ]
+  {
+    "objects": [
+      {"url": "<physical url>"},...
+    ]
+  }
+```
+
+### Twitter Metadata
+
+If the URL requested is a Twitter user page, the response will contain a
+'twitter' key containing the following data:
+
++ Twitter User Metadata
+```
+"twitter": {
+  "user_id": "twitter_handle",
+  "bio": "twitter bio for user",
+  "android_uri": "android-app://url-to-user-in-app",
+  "avatar" { "src": "url", "alt": "alt text" },
+  "avatar_small": { "src": "url", "alt": "alt text" }
+}
 ```
 
 ## POST /api/v1/metadata/raw

@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const parser = require('./parser.js');
 const jsdom = require('jsdom').jsdom;
+const config = require('../config.js');
 
 /**
  * Wrapper around the function fetchAndParse that adds
@@ -33,7 +34,9 @@ function postProcess(url, data) {
  * object with the result to send it to the parsing module.
  */
 function fetchAndParse(url) {
-  return fetch(url).then((res) => {
+  return fetch(url, {
+    timeout: config.fetch_timeout || 3000
+  }).then((res) => {
     if (res.status !== 200) {
       return null;
     }

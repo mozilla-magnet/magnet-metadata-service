@@ -14,7 +14,7 @@ function getManifestUrl(url, manifest) {
     url = url.slice(0, lastSlashIndex);
   }
 
-  return url + '/manifest.json';
+  return url + '/' + manifest;
 }
 
 var ManifestParser = {
@@ -40,14 +40,6 @@ var ManifestParser = {
       return response.json();
     }).then((json) => {
       metadata.manifest = json;
-
-      // Overwrite any known fields
-      if (json.name) {
-        metadata.description = json.name;
-      }
-      if (json.short_name) {
-        metadata.title = json.short_name;
-      }
 
       return metadata;
     }).catch((err) => {

@@ -33,7 +33,7 @@ app.post(/^\/metadata(\/)?$/, function(req, res, next) {
   Promise.all(tasks).then((parsedData) => {
     res.json(parsedData);
   }).catch(err => {
-    next();
+    next(err);
   }); 
 });
 

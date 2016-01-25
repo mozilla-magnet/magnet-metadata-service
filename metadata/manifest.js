@@ -31,12 +31,11 @@ var ManifestParser = {
       return Promise.resolve(metadata);
     }
 
-
     return fetch(getManifestUrl(url, manifestUrl), {
       timeout: config.fetch_timeout || 3000
     }).then((response) => {
       if (response.status !== 200) {
-        return Promise.resolve(metadata);
+        return Promise.reject(response.statusText);
       }
       return response.json();
     }).then((json) => {
@@ -51,6 +50,8 @@ var ManifestParser = {
       }
 
       return metadata;
+    }).catch((err) => {
+      return new Promise.resolve(metadata);
     });
   }
 };

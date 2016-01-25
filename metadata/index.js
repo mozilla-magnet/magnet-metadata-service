@@ -37,6 +37,9 @@ function preProcess(url) {
 }
 
 function postProcess(url, data) {
+  if (!data || data === {}) {
+    return Promise.resolve(data);
+  }
   return new Promise((resolve) => {
     db.put(url, data, (err) => {
       resolve(data);

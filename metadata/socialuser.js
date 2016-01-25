@@ -1,5 +1,6 @@
 'use strict';
 const URL = require('url');
+const PATH = require('path');
 
 // Given a URL to a Social Media website, determine information about the User
 // the URL relates to if any
@@ -46,6 +47,25 @@ const SocialUserParser = {
 
         if (userData) {
           twitter.bio = userData.textContent;
+        }
+
+        const profileBannerImage = doc.querySelector('.ProfileCanopy-headerBg img');
+
+        if (profileBannerImage) {
+          const bannerImageUrl = URL.parse(profileBannerImage.src);
+          const path = bannerImageUrl;
+          const dirname = PATH.dirname(path.pathname);
+
+          bannerImageUrl.pathname = PATH.format({
+            root: "/",
+            dir: dirname,
+            base: "mobile"
+          });
+
+          twitter.profile_banner = {
+            normal: profileBannerImage.src,
+            mobile: URL.format(bannerImageUrl)
+          }
         }
 
       } catch(e) {

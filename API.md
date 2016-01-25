@@ -32,6 +32,10 @@ If the URL requested is a Twitter user page, the response will contain a
   "android_uri": "android-app://url-to-user-in-app",
   "avatar" { "src": "url", "alt": "alt text" },
   "avatar_small": { "src": "url", "alt": "alt text" }
+  "profile_banner": {
+    "normal": "url",
+    "mobile": "url"
+  }
 }
 ```
 

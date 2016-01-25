@@ -34,11 +34,17 @@ function postProcess(url, data) {
  * object with the result to send it to the parsing module.
  */
 function fetchAndParse(url) {
+  var finalUrl = url;
   return fetch(url, {
     timeout: config.fetch_timeout || 3000
   }).then((res) => {
     if (res.status !== 200) {
       return null;
+    }
+
+    // After following redirections keep the final url
+    if (res.url !== finalUrl) {
+      finalUrl = res.url;
     }
 
     return new Promise((resolve) => {
@@ -50,7 +56,7 @@ function fetchAndParse(url) {
       });
     });
   }).then((doc) => {
-    return parser.parse(url, doc);
+    return parser.parse(finalUrl, doc);
   }).catch((err) => {
     console.info('Error parsing url ', url, ':: ', err);
   });

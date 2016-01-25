@@ -51,7 +51,7 @@ var ManifestParser = {
 
       return metadata;
     }).catch((err) => {
-      return new Promise.resolve(metadata);
+      return Promise.resolve(metadata);
     });
   }
 };

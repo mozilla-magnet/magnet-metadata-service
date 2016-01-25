@@ -1,9 +1,12 @@
 var config = require('./config.js'),
     express = require('express'),
     api = require('./api.js'),
-    fe = require('./fe.js');
+    fe = require('./fe.js'),
+    morgan = require('morgan');
 
 var app = express();
+
+app.use(morgan('combined'));
 
 // REST api
 var APIEndPoint = '/api/v1/';

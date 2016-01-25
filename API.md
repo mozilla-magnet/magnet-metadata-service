@@ -35,7 +35,8 @@ If the URL requested is a Twitter user page, the response will contain a
   "profile_banner": {
     "normal": "url",
     "mobile": "url"
-  }
+  },
+  "follow_url": "follow intent url"
 }
 ```
 

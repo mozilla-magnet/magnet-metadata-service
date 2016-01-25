@@ -65,7 +65,17 @@ const SocialUserParser = {
           twitter.profile_banner = {
             normal: profileBannerImage.src,
             mobile: URL.format(bannerImageUrl)
-          }
+          };
+        }
+
+        if (twitter.user_id) {
+          twitter.follow_url = URL.format({
+            protocol: "https",
+            slashes: true,
+            host: "twitter.com",
+            pathname: "/intent/follow",
+            query: { "screen_name": twitter.user_id }
+          });
         }
 
       } catch(e) {

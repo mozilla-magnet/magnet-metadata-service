@@ -20,6 +20,12 @@ function getManifestUrl(url, manifest) {
 var ManifestParser = {
   execute: function(url, doc, metadata) {
     var manifestNode = doc.querySelector('link[rel="manifest"]');
+
+    // Exit early if no manifest node present
+    if (!manifestNode) {
+      return Promise.resolve(metadata);
+    }
+
     var manifestUrl = manifestNode.href;
     if (!manifestUrl) {
       return Promise.resolve(metadata);

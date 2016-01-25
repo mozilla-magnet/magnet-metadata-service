@@ -41,14 +41,6 @@ var ManifestParser = {
     }).then((json) => {
       metadata.manifest = json;
 
-      // Overwrite any known fields
-      if (json.name) {
-        metadata.description = json.name;
-      }
-      if (json.short_name) {
-        metadata.title = json.short_name;
-      }
-
       return metadata;
     }).catch((err) => {
       return Promise.resolve(metadata);

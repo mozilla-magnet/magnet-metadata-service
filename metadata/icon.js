@@ -26,6 +26,9 @@ var IconParser = {
           if (iconLink.sizes) {
             icon.size = iconLink.sizes;
           }
+          if (iconLink.getAttribute('color')) {
+            icon.color = iconLink.getAttribute('color');
+          }
           icons.push(icon);
           metadata.icon = icon.href;
         });
@@ -37,6 +40,7 @@ var IconParser = {
     icons.concat(getIconsByType('link[rel="shortcut icon"]'));
     icons.concat(getIconsByType('link[rel="icon"]'));
     icons.concat(getIconsByType('link[rel="apple-touch-icon"]'));
+    icons.concat(getIconsByType('link[rel="mask-icon"]'));
 
     if (icons.length > 0) {
       metadata.icons = icons;

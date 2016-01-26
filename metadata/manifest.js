@@ -14,7 +14,11 @@ function getManifestUrl(url, manifest) {
     url = url.slice(0, lastSlashIndex);
   }
 
-  return url + '/' + manifest;
+  if (url.endsWith('/')) {
+    url += '/';
+  }
+
+  return url + manifest;
 }
 
 var ManifestParser = {

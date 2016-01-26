@@ -23,8 +23,8 @@ var IconParser = {
           icon = {
             href: getIconUrl(url, iconLink.href)
           }
-          if (iconLink.sizes) {
-            icon.size = iconLink.sizes;
+          if (iconLink.getAttribute('sizes')) {
+            icon.size = iconLink.getAttribute('sizes');
           }
           if (iconLink.getAttribute('color')) {
             icon.color = iconLink.getAttribute('color');

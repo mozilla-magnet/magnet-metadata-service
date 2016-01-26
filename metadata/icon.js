@@ -1,6 +1,8 @@
 function getIconUrl(url, icon) {
   if (icon.startsWith('http')) {
     return icon;
+  } else if (icon.startsWith('//')) {
+    return 'http:' + icon;
   }
 
   var lastSlashIndex = url.lastIndexOf('/');
@@ -14,33 +16,27 @@ function getIconUrl(url, icon) {
 var IconParser = {
   execute: function(url, doc, metadata) {
     var icons = [];
-    // Try first the typical 'icon'
-    if (doc.querySelectorAll('link[rel="icon"]')) {
-      [].slice.call(doc.querySelectorAll('link[rel="icon"]'), 0).forEach((iconLink) => {
-        icon = {
-          href: getIconUrl(url, iconLink.href)
-        }
-        if (iconLink.sizes) {
-          icon.size = iconLink.sizes;
-        }
-        icons.push(icon);
-        metadata.icon = icon.href;
-      });
+
+    function getIconsByType(selector) {
+      if (doc.querySelectorAll(selector)) {
+        [].slice.call(doc.querySelectorAll(selector), 0).forEach((iconLink) => {
+          icon = {
+            href: getIconUrl(url, iconLink.href)
+          }
+          if (iconLink.sizes) {
+            icon.size = iconLink.sizes;
+          }
+          icons.push(icon);
+          metadata.icon = icon.href;
+        });
+      } else {
+        return [];
+      }
     }
 
-    // Now go for the applet touch ones
-    if (doc.querySelectorAll('link[rel="apple-touch-icon"]')) {
-      [].slice.call(doc.querySelectorAll('link[rel="apple-touch-icon"]'), 0).forEach((iconLink) => {
-        icon = {
-          href: getIconUrl(url, iconLink.href)
-        }
-        if (iconLink.sizes) {
-          icon.size = iconLink.sizes;
-        }
-        icons.push(icon);
-        metadata.icon = icon.href;
-      }); 
-    }
+    icons.concat(getIconsByType('link[rel="shortcut icon"]'));
+    icons.concat(getIconsByType('link[rel="icon"]'));
+    icons.concat(getIconsByType('link[rel="apple-touch-icon"]'));
 
     if (icons.length > 0) {
       metadata.icons = icons;

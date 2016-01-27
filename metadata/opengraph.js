@@ -280,20 +280,23 @@ function _addKeyValueToMember(type, key, value, parentData, data) {
           parentData[type][key] = value;
         }
       }
+
+      return;
     } else {
       // Check if the key belongs to a subtype
     }
-  } else {
-    if (_openGraphPropertyIsArray(key)) {
-      if (key in parentData) {
-        parentData[key].push(value);
-      } else {
-        parentData[key] = [value];
-      }
-    } else {
-      parentData[key] = value;
-    }
   }
+
+  if (_openGraphPropertyIsArray(key)) {
+    if (key in parentData) {
+      parentData[key].push(value);
+    } else {
+      parentData[key] = [value];
+    }
+  } else {
+    parentData[key] = value;
+  }
+
 }
 
 function _openGraphPropertyIsArray(type, property) {

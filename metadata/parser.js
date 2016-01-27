@@ -1,6 +1,7 @@
 const ManifestParser = require('./manifest.js');
 const SocialUserParser = require('./socialuser.js');
 const IconParser = require('./icon.js');
+const AndroidParser = require('./googleplay.js');
 
 var SimpleParser = {
   execute: function(url, doc, metadata) {
@@ -41,7 +42,8 @@ var SimpleParser = {
 
 module.exports = {
   parse: function parse(url, doc) {
-    var parsers = [SimpleParser, ManifestParser, SocialUserParser, IconParser];
+    var parsers = [SimpleParser, ManifestParser, SocialUserParser, IconParser,
+      AndroidParser];
 
     // Add other parsers on demand, they will execute in waterfall mode
     // if (url.contains('youtube')) {

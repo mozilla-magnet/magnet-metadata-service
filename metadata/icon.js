@@ -40,6 +40,7 @@ var IconParser = {
     icons.concat(getIconsByType('link[rel="shortcut icon"]'));
     icons.concat(getIconsByType('link[rel="icon"]'));
     icons.concat(getIconsByType('link[rel="apple-touch-icon"]'));
+    icons.concat(getIconsByType('link[rel="apple-touch-icon-precomposed"]'));
     icons.concat(getIconsByType('link[rel="mask-icon"]'));
 
     if (icons.length > 0) {

@@ -1,5 +1,7 @@
+'use strict';
 const fetch = require('node-fetch');
 const config = require('../config.js');
+const xml2js = require('xml2js');
 
 const oEmbedParser = {
   execute: function(url, doc, metadata) {
@@ -17,11 +19,44 @@ const oEmbedParser = {
         return response.json();
       }).then((json) => {
         metadata.embed = json;
-        return Promise.resolve(metadata);
+        return metadata;
       });
     } else {
-      // TODO: XML embed
-      return Promise.resolve(metadata);
+      const xmlEmbed = doc.querySelector('link[type="text/xml+oembed"]');
+
+      if (!xmlEmbed) {
+        return metadata;
+      }
+
+      return fetch(xmlEmbed.href, {
+        timeout: config.fetch_timeout || 3000
+      }).then((response) => {
+        if (response.status !== 200) {
+          return Promise.reject(reponse.statusText);
+        }
+
+        return response.text();
+      }).then((responseText) => {
+        return new Promise((resolve, reject) => {
+          xml2js.parseString(responseText, function(err, result) {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(result);
+            }
+          });
+        });
+      }).then((parsedDoc) => {
+        const oembed = parsedDoc.oembed;
+        const cleanedOEmbed = Object.keys(oembed).reduce((data, key) => {
+          data[key] = oembed[key][0];
+          return data;
+        }, {});
+        console.log(cleanedOEmbed);
+
+        metadata.embed = cleanedOEmbed;
+        return metadata;
+      });
     }
   }
 };

@@ -42,6 +42,10 @@ const openGraphProperties = {
   "audio:type": String, // MIME
 };
 
+const typeAliases = {
+  "soundcloud:sound": "audio"
+};
+
 
 function TypedArray(type) {
   this.type = type;
@@ -232,9 +236,6 @@ function _parseOpenGraphDoc(doc) {
         value = tag.getAttribute('value');
       }
 
-      _addKeyValueToMember(pageType, key, value, page);
-
-
       if (key === 'type') {
 
         // Add new types to the prefix check - some sites (like spotify) don't
@@ -244,9 +245,16 @@ function _parseOpenGraphDoc(doc) {
           pageType = value;
           prefixChecks = prefixChecks.concat(Object.keys(openGraphTypes[value]));
         } else {
-          console.log("Unknown opengraph type: ", value);
+          if (value in typeAliases) {
+            pageType = typeAliases[value];
+            value = pageType;
+          } else {
+            console.log("Unknown opengraph type: ", value);
+          }
         }
       }
+
+      _addKeyValueToMember(pageType, key, value, page);
     }
   }
 

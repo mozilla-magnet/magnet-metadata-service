@@ -43,7 +43,8 @@ const openGraphProperties = {
 };
 
 const typeAliases = {
-  "soundcloud:sound": "audio"
+  "soundcloud:sound": "audio",
+  "flickr_photos:photo", "image"
 };
 
 

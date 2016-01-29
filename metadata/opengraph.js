@@ -321,9 +321,8 @@ const OpenGraphParser = {
   execute: function(url, doc, metadata) {
     const og_data = _parseOpenGraphDoc(doc);
 
-    if (Object.keys(og_data).length > 0) {
-      metadata.og_data = og_data;
-    }
+    console.log("Existing: ", metadata.og_data);
+    metadata.og_data = Object.assign(metadata.og_data || {}, og_data);
 
     return Promise.resolve(metadata);
   }

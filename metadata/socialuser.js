@@ -11,8 +11,17 @@ const SocialUserParser = {
       const parsedUrl = URL.parse(url);
       const dirs = parsedUrl.pathname.split("/").filter(dirComponent => dirComponent.length);
 
-      if (dirs.length === 1) {
+      console.log(dirs);
+
+      if (dirs.length > 0) {
         twitter.user_id = dirs[0]
+
+        if (dirs.length === 1) {
+          // Is a profile
+          metadata.og_data = Object.assign(metadata.og_data || {}, {
+            type: "profile"
+          });
+        }
       }
 
       try {

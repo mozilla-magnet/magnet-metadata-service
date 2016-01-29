@@ -3,13 +3,30 @@ const fetch = require('node-fetch');
 const config = require('../config.js');
 const xml2js = require('xml2js');
 
+function getOEmbedUrl(url, oembed) {
+  if (oembed.startsWith('http')) {
+    return oembed;
+  }
+
+  var lastSlashIndex = url.lastIndexOf('/');
+  if (lastSlashIndex > 7) {
+    url = url.slice(0, lastSlashIndex);
+  }
+
+  if (url.endsWith('/')) {
+    url += '/';
+  }
+
+  return url + oembed;
+}
+
 const oEmbedParser = {
   execute: function(url, doc, metadata) {
 
     const jsonEmbed = doc.querySelector('link[type="application/json+oembed"]');
 
     if (jsonEmbed) {
-      return fetch(jsonEmbed.href, {
+      return fetch(getOEmbedUrl(url, jsonEmbed.href), {
         timeout: config.fetch_timeout || 3000
       }).then((response) => {
         if (response.status !== 200) {
@@ -28,7 +45,7 @@ const oEmbedParser = {
         return metadata;
       }
 
-      return fetch(xmlEmbed.href, {
+      return fetch(getOEmbedUrl(url, xmlEmbed.href), {
         timeout: config.fetch_timeout || 3000
       }).then((response) => {
         if (response.status !== 200) {

@@ -11,6 +11,8 @@ app.use(morgan('combined'));
 // REST api
 var APIEndPoint = '/api/v1/';
 app.use(APIEndPoint, api);
+// Compatibility layer
+api.addCompatibilityLayer(app);
 
 // Frontend api
 var FEEndPoint = '/';

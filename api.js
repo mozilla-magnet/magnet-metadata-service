@@ -18,9 +18,10 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.post(/^\/metadata(\/)?$/, function(req, res, next) {
+function processRequest(req, res, next) {
   const requestBody = req.body;
-  if (!requestBody.objects || !Array.isArray(requestBody.objects)) {
+  if (!requestBody || !requestBody.objects ||
+     !Array.isArray(requestBody.objects)) {
     res.status(400);
     res.send('Invalid parameters');
     return false;
@@ -34,18 +35,34 @@ app.post(/^\/metadata(\/)?$/, function(req, res, next) {
     res.json(parsedData);
   }).catch(err => {
     next(err);
-  }); 
+  });
+}
+
+app.post(/^\/metadata(\/)?$/, function(req, res, next) {
+   processRequest(req, res, next);
 });
 
-app.post(/^\/metadata\/raw(\/)?$/, function(req, res) {
-  const requestBody = req.body;
-  res.json(requestBody);
+app.post(/^\/metadata\/raw(\/)?$/, function(req, res, next) {
+  // So far there is no difference with the previous method.
+  processRequest(req, res, next);
 });
 
-app.post(/^\/metadata\/refresh$/, function(req, res) {
-  const requestBody = req.body;
-  res.json(requestBody);
+app.post(/^\/metadata\/refresh$/, function(req, res, next) {
+  // Since we don't have caching system yet, this is a mock.
+  res.json({});
 });
+
+/**
+ * Compatibility layer
+ */
+ app.addCompatibilityLayer = function(mainApp) {
+  mainApp.post(/^\/resolve-scan$/, function(req, res, next) {
+    processRequest(req, res, next);
+  });
+  mainApp.post(/^\/refresh-url$/, function(req, res, next) {
+    res.json({});
+  });
+ }
 
 // TODO: install a middleware to handle any request that doesnt end up properly
 

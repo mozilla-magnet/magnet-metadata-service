@@ -36,8 +36,13 @@ function postProcess(url, data) {
 function fetchAndParse(url) {
   var finalUrl = url;
   return fetch(url, {
-    timeout: config.fetch_timeout || 3000
+    timeout: config.fetch_timeout || 3000,
+    headers: {
+        // Pretend to be Chrome for UA sniffing sites
+        "User-Agent":
+            "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36" }
   }).then((res) => {
+    console.log(res);
     if (res.status !== 200) {
       return null;
     }

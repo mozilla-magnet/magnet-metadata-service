@@ -37,4 +37,23 @@ describe('Basic parsing', () => {
         done();
       });
   });
+
+  it('should give information of several sites at once', (done) => {
+    var sites = Object.assign({}, basicSites);
+    sites.objects.push({
+      url: 'https://www.facebook.com'
+    });
+    request(app)
+      .post('/metadata')
+      .send(sites)
+      .expect(200)
+      .end((err, response) => {
+        assert.isNull(err);
+
+        var result = JSON.parse(response.text);
+        assert.lengthOf(result, 2);
+
+        done();
+      });
+  });
 });

@@ -1,4 +1,4 @@
-# (Another) Physical-Web Web Service
+# (Another) Physical-Web Web Service [![Build Status](https://travis-ci.org/arcturus/pw-ws.svg?branch=master)](https://travis-ci.org/arcturus/pw-ws)
 
 This project is an implementation in Nodejs of a [Physical-Web](https://google.github.io/physical-web/) metadata service.
 

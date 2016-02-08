@@ -56,4 +56,26 @@ describe('Basic parsing', () => {
         done();
       });
   });
+
+  it('should unwrap shorted urls', (done) => {
+    var sites = {
+      objects: [{url: 'http://bit.ly/1Q3Pb6u'}]
+    };
+    var originalUrl = 'https://twitter.com/mepartoconmigo';
+    request(app)
+      .post('/metadata')
+      .send(sites)
+      .expect(200)
+      .end((err, response) => {
+        assert.isNull(err);
+
+        var result = JSON.parse(response.text);
+        assert.lengthOf(result, 1);
+
+        result = result[0];
+
+        assert.equal(result.displayUrl, originalUrl);
+        done();
+      });
+  });
 });

@@ -10,7 +10,11 @@ function getIconUrl(url, icon) {
     url = url.slice(0, lastSlashIndex);
   }
 
-  return url + '/' + icon;
+  if (!icon.startsWith('/')) {
+    url += '/';
+  }
+
+  return url + icon;
 }
 
 var IconParser = {

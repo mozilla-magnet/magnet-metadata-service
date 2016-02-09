@@ -1,7 +1,7 @@
 'use strict';
 
 const request = require('supertest');
-const app = require('../../api.js');
+const app = require('../../../api.js');
 const assert = require('chai').assert;
 
 var playSite = {

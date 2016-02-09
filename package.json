@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "PW_WS_LOG_LEVEL='trace' ./node_modules/.bin/mocha --timeout 20000 --recursive"
+    "test": "PW_WS_LOG_LEVEL='trace' ./node_modules/.bin/mocha --timeout 20000 --recursive",
+    "coverage": "PW_WS_LOG_LEVEL='trace' ./node_modules/.bin/istanbul cover --report html ./node_modules/.bin/_mocha -- --timeout 20000 --recursive"
   },
   "keywords": [
     "physical",
@@ -32,6 +33,7 @@
   "enginesStrict": true,
   "devDependencies": {
     "chai": "^3.5.0",
+    "istanbul": "^0.4.2",
     "mocha": "^2.4.5",
     "supertest": "^1.1.0"
   }

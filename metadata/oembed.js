@@ -2,6 +2,7 @@
 const fetch = require('node-fetch');
 const config = require('../config.js');
 const xml2js = require('xml2js');
+const logger = require('../utils/logger.js');
 
 function getOEmbedUrl(url, oembed) {
   if (oembed.startsWith('http')) {
@@ -69,7 +70,7 @@ const oEmbedParser = {
           data[key] = oembed[key][0];
           return data;
         }, {});
-        console.log(cleanedOEmbed);
+        logger.debug(`Oembed information: ${cleanedOEmbed}`);
 
         metadata.embed = cleanedOEmbed;
         return metadata;

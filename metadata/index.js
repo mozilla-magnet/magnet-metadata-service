@@ -4,6 +4,7 @@ const jsdom = require('jsdom').jsdom;
 const config = require('../config.js');
 const parseContentType = require('content-type').parse;
 const ICAL = require('ical.js');
+const logger = require('../utils/logger.js');
 
 /**
  * Wrapper around the function fetchAndParse that adds
@@ -43,7 +44,7 @@ const contentProcessors = {
     }).then((doc) => {
       return parser.parse(finalUrl, doc);
     }).catch((err) => {
-      console.info('Error parsing url ', url, ':: ', err);
+      logger.info('Error parsing url ${url} :: ${err}');
     });
   },
   'text/calendar': function(url, finalUrl, res) {
@@ -106,7 +107,7 @@ function fetchAndParse(url) {
       return contentProcessor(url, finalUrl, res);
     }
 
-    console.log("Unkown content type");
+    logger.error("Unkown content type");
     return null;
   });
 }

@@ -3,6 +3,7 @@ const URL = require('url');
 const QS = require('querystring');
 const fetch = require('node-fetch');
 const config = require('../config.js');
+const logger = require('../utils/logger.js');
 
 const configuredOEmbedServices = {
   "spotify.com": {
@@ -21,7 +22,7 @@ function getOEmbedUrl(url) {
 
   for (let domainIndex = 0; domainIndex < configuredDomains.length; domainIndex++) {
     const key = configuredDomains[domainIndex];
-    console.log(key, "   ", parsedUrl.hostname);
+    logger.debug(`Checking custom oembed domain ${key} against url ${parsedUrl.hostname}`);
     if (parsedUrl.hostname.indexOf(key) >= 0) {
       return configuredOEmbedServices[key].endpoint.replace("%s", QS.escape(url));
     }

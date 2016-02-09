@@ -1,5 +1,7 @@
 'use strict';
 
+const logger = require('../utils/logger.js');
+
 // Ideally this parser should create a list of triples - but it doesn't.  Instead it
 // tries to structure the OG data in some meaningful way based on the defined types
 //
@@ -241,7 +243,7 @@ function _parseOpenGraphDoc(doc) {
         // Add new types to the prefix check - some sites (like spotify) don't
         // add og: to the prefix once a type has been defined
         if (value in openGraphTypes) {
-          console.log("Adding ",Object.keys(openGraphTypes[value]));
+          logger.debug(`Adding new opengraph type`, Object.keys(openGraphTypes[value]));
           pageType = value;
           prefixChecks = prefixChecks.concat(Object.keys(openGraphTypes[value]));
         } else {
@@ -249,7 +251,7 @@ function _parseOpenGraphDoc(doc) {
             pageType = typeAliases[value];
             value = pageType;
           } else {
-            console.log("Unknown opengraph type: ", value);
+            logger.debug(`Unknown opengraph type: ${value}`);
           }
         }
       }
@@ -258,8 +260,7 @@ function _parseOpenGraphDoc(doc) {
     }
   }
 
-  console.log("Page opengraph data: ");
-  console.log(JSON.stringify(page, 2, 2));
+  logger.debug("Page opengraph data: ", page);
   return page;
 }
 
@@ -321,7 +322,7 @@ const OpenGraphParser = {
   execute: function(url, doc, metadata) {
     const og_data = _parseOpenGraphDoc(doc);
 
-    console.log("Existing: ", metadata.og_data);
+    logger.debug("Existing: ", metadata.og_data);
     metadata.og_data = Object.assign(metadata.og_data || {}, og_data);
 
     return Promise.resolve(metadata);

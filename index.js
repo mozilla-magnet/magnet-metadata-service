@@ -2,7 +2,8 @@ var config = require('./config.js'),
     express = require('express'),
     api = require('./api.js'),
     fe = require('./fe.js'),
-    morgan = require('morgan');
+    morgan = require('morgan'),
+    logger = require('./utils/logger.js');
 
 var app = express();
 
@@ -22,5 +23,6 @@ var server = app.listen(config.port, function () {
   var host = server.address().address;
   var port = server.address().port;
 
-  console.log('Physical-Web service listening at http://%s:%s', host, port);
+  logger.info(`Physical-Web service listening at http://${host}:${port}`);
+
 });

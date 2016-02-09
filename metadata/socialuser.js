@@ -1,6 +1,7 @@
 'use strict';
 const URL = require('url');
 const PATH = require('path');
+const logger = require('../utils/logger.js');
 
 // Given a URL to a Social Media website, determine information about the User
 // the URL relates to if any
@@ -11,7 +12,7 @@ const SocialUserParser = {
       const parsedUrl = URL.parse(url);
       const dirs = parsedUrl.pathname.split("/").filter(dirComponent => dirComponent.length);
 
-      console.log(dirs);
+      logger.debug('SocialUserParser with directories ', dirs);
 
       if (dirs.length > 0) {
         twitter.user_id = dirs[0]

@@ -1,7 +1,7 @@
 'use strict';
 
 var request = require('supertest');
-var app = require('../api.js');
+var app = require('../../api.js');
 var assert = require('chai').assert;
 
 var basicSites = {

@@ -1,8 +1,8 @@
 'use strict';
 
-const request = require('supertest');
-const app = require('../../../api.js');
-const assert = require('chai').assert;
+var app = require('../../../lib/routes/api');
+var request = require('supertest');
+var assert = require('chai').assert;
 
 var basicSites = {
   objects: [
@@ -25,8 +25,8 @@ describe('Basic parsing', () => {
         assert.lengthOf(result, 1);
 
         result = result[0];
-        // Check basic fields 
-        ['id', 'url', 'displayUrl', 
+        // Check basic fields
+        ['id', 'url', 'displayUrl',
           'title', 'description', 'icon'].forEach((field) => {
           assert.isNotNull(result[field]);
         });

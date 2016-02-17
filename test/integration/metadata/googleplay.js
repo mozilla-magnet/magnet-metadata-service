@@ -1,8 +1,12 @@
 'use strict';
 
-const request = require('supertest');
-const app = require('../../../api.js');
+/**
+ * Dependencies
+ */
+
+const app = require('../../../lib/routes/api');
 const assert = require('chai').assert;
+const request = require('supertest');
 
 var playSite = {
   objects: [
@@ -24,9 +28,7 @@ describe('Google Play parser', () => {
         var result = JSON.parse(response.text);
         assert.lengthOf(result, 1);
 
-
         result = result[0];
-
         assert.ok(result.android);
 
         ['id', 'name', 'package', 'icon', 'rating'].forEach((field) => {

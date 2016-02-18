@@ -1,7 +1,7 @@
 'use strict';
 
+const app = require('../../../lib/routes/api');
 const request = require('supertest');
-const app = require('../../../api.js');
 const assert = require('chai').assert;
 
 var iconSites = {
@@ -66,16 +66,16 @@ describe('Icons', () => {
       .end((err, response) => {
         assert.isNull(err);
 
+
         var result = JSON.parse(response.text);
         assert.lengthOf(result, 1);
-
         result = result[0];
-        
-        var extraInfoPresent = result.icons.some((icon) => {
-          return icon.size || icon.color;
-        });
-        assert.ok(extraInfoPresent);
 
+        var extraInfoPresent = result.icons.some((icon) => {
+          return icon.sizes || icon.color;
+        });
+
+        assert.ok(extraInfoPresent);
         done();
       });
   });

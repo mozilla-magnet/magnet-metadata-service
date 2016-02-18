@@ -1,7 +1,7 @@
 'use strict';
 
 const request = require('supertest');
-const app = require('../../../api.js');
+const app = require('../../../lib/routes/api');
 const assert = require('chai').assert;
 
 var manifestSites = {
@@ -25,7 +25,9 @@ describe('Manifest parser', () => {
         assert.lengthOf(result, 1);
 
         result = result[0];
-        
+
+        console.log(result);
+
         assert.isNotNull(result.manifest);
         var manifest = result.manifest;
 
@@ -35,6 +37,7 @@ describe('Manifest parser', () => {
         done();
       });
   });
+
   it('should not be present for sites without manifest', (done) => {
     var noManifestSites = Object.assign({}, manifestSites);
     noManifestSites.objects[0].url = 'https://www.mozilla.org';
@@ -52,7 +55,7 @@ describe('Manifest parser', () => {
         result = result[0];
         assert.notOk(result.manifest);
 
-        done();             
-      })
+        done();
+      });
   });
 });

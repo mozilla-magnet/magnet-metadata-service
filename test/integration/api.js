@@ -1,7 +1,7 @@
 'use strict';
 
+var app = require('../../lib/routes/api');
 var request = require('supertest');
-var app = require('../../api.js');
 
 var basicSites = {
   objects: [
@@ -22,7 +22,7 @@ describe('Api', () => {
   it('should discard invalid requests format', (done) => {
     request(app)
       .post('/metadata')
-      .send({'url': 'http://example.com'})
+      .send({ 'url': 'http://example.com' })
       .expect(400)
       .end(done);
   });

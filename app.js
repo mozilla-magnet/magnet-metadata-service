@@ -17,7 +17,8 @@ var app = module.exports = express()
   .use('/', require('./lib/routes/frontend'));
 
 // start listening
-var server = app.listen(config.port, function () {
+const port = process.env.PORT || config.port;
+var server = app.listen(port, function () {
   var host = server.address().address;
   var port = server.address().port;
   debug(`magnet service listening at http://${host}:${port}`);

@@ -1,0 +1,7 @@
+{
+  "name": "(Another) Physical Web Service",
+  "description": "Alternative implementation of Google's metada service for the Physical web",
+  "repository": "https://github.com/mozilla-magnet/magnet-metadata-service",
+  "logo": "https://avatars1.githubusercontent.com/u/17905978?v=3&s=200",
+  "keywords": ["physical", "web", "service", "mozilla"]
+}

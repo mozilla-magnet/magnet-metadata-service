@@ -23,7 +23,7 @@
     "express": "^4.13.3",
     "ical.js": "^1.1.2",
     "jsdom": "^7.2.2",
-    "magnet-html-parser": "github:wilsonpage/magnet-html-parser",
+    "magnet-html-parser": "github:mozilla-magnet/magnet-html-parser",
     "morgan": "^1.6.1",
     "node-fetch": "^1.3.3",
     "superagent": "^1.7.2",

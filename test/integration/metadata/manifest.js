@@ -26,8 +26,6 @@ describe('Manifest parser', () => {
 
         result = result[0];
 
-        console.log(result);
-
         assert.isNotNull(result.manifest);
         var manifest = result.manifest;
 

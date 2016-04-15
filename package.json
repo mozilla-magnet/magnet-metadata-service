@@ -1,6 +1,6 @@
 {
   "name": "magnet-metadata-service",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Physical Web (Alternative) web service implementation",
   "main": "app.js",
   "scripts": {

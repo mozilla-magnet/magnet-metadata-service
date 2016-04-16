@@ -18,7 +18,8 @@ var app = module.exports = express()
 
 // start listening
 const port = process.env.PORT || config.port;
-var server = app.listen(port, function () {
+const address = process.env.ADDRESS || config.address || '';
+var server = app.listen(port, address, function () {
   var host = server.address().address;
   var port = server.address().port;
   debug(`magnet service listening at http://${host}:${port}`);

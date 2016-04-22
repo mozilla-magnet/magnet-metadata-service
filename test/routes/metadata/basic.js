@@ -40,9 +40,8 @@ describe('Basic parsing', () => {
 
   it('should give information of several sites at once', (done) => {
     var sites = Object.assign({}, basicSites);
-    sites.objects.push({
-      url: 'https://www.facebook.com'
-    });
+    sites.objects.push({ url: 'https://www.facebook.com' });
+
     request(app)
       .post('/metadata')
       .send(sites)

@@ -1,7 +1,7 @@
 'use strict';
 
 const request = require('supertest');
-const app = require('../../app');
+const app = require('../app');
 
 describe('Frontend', () => {
   it('should redirect to github repo', (done) => {

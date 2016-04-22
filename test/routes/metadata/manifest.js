@@ -1,8 +1,8 @@
 'use strict';
 
-const request = require('supertest');
 const app = require('../../../lib/routes/api');
 const assert = require('chai').assert;
+const request = require('supertest');
 
 var manifestSites = {
   objects: [

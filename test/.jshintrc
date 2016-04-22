@@ -1,7 +1,0 @@
-{
-  "extends": "..",
-  "predef": [
-    "describe",
-    "it"
-  ]
-}

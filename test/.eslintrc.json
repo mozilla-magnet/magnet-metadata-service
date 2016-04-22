@@ -1,0 +1,9 @@
+{
+  "extends": "../.eslintrc.json",
+  "globals": {
+    "it": true,
+    "describe": true,
+    "after": true,
+    "before": true
+  }
+}

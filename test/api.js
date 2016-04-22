@@ -1,6 +1,6 @@
 'use strict';
 
-var app = require('../../lib/routes/api');
+var app = require('../lib/routes/api');
 var request = require('supertest');
 
 var basicSites = {

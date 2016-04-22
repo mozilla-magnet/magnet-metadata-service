@@ -4,11 +4,12 @@
  * Dependencies
  */
 
-var request = require('../../../lib/utils/request');
+var parseHtml = require('magnet-html-parser');
 var app = require('../../../lib/routes/api');
 var supertest = require('supertest');
 var assert = require('assert');
 var sinon = require('sinon');
+var nock = require('nock');
 
 var testUrl = 'https://facebook.com/wilsonpage';
 var adaptorUrl = 'http://box.wilsonpage.me/magnet-facebook-adaptor';
@@ -23,84 +24,99 @@ var requestBody = {
   ]
 };
 
-describe('adaptors', () => {
-  before(() => {
-    sinon.stub(request, 'get');
-  });
+/**
+ * Tests
+ */
 
-  after(() => {
-    request.get.restore();
+describe('adaptors', () => {
+  beforeEach(function() {
+    this.sandbox = sinon.sandbox.create();
+  })
+
+  afterEach(function() {
+    this.sandbox.restore();
+    nock.cleanAll();
   });
 
   it('requests the adaptor url instead', done => {
-    request.get.returns(Promise.resolve({
-      request: { url: testUrl },
-      headers: { 'content-type': 'application/json; charset=utf-8' },
-      body: { title: 'My title' }
-    }));
+    var endUrl;
+    var testUrlStub = nock(testUrl)
+      .get(/./)
+      .reply(200);
 
-    supertest(app)
-      .post('/metadata/')
-      .send(requestBody)
-      .end((err) => {
-        if (err) throw err;
-        sinon.assert.calledWith(request.get, adaptorUrl + '?url=' + testUrl)
-        done();
+    var adaptorUrlStub = nock(adaptorUrl)
+      .get(/./)
+      .reply(200, function(uri) {
+        endUrl = uri;
+        return { title: 'adapted title' }
       });
-  });
-
-  it('does no html-parsing if the service returns JSON', done => {
-    request.get.returns(Promise.resolve({
-      request: { url: testUrl },
-      headers: { 'content-type': 'application/json; charset=utf-8' },
-      body: { title: 'My title' }
-    }));
 
     supertest(app)
       .post('/metadata/')
       .send(requestBody)
       .end((err, res) => {
         if (err) throw err;
-        assert.deepEqual(res.body, [{ title: 'My title' }])
+        assert.equal(testUrlStub.isDone(), false, 'original url not called');
+        assert.equal(adaptorUrlStub.isDone(), true, 'adaptor called');
+        assert.equal(endUrl, '/magnet-facebook-adaptor?url=https://facebook.com/wilsonpage')
+        assert.equal(res.body[0].title, 'adapted title');
         done();
       });
   });
 
-  it('does html-parsing if the service returns HTML', done => {
-    request.get.returns(Promise.resolve({
-      request: { url: testUrl },
-      headers: { 'content-type': 'text/html; charset=utf-8' },
-      text: '<title>My title</title>'
-    }));
+  it('does no html-parsing if the service returns JSON', function(done) {
+    this.sandbox.spy(parseHtml, 'parse');
+
+    nock(adaptorUrl)
+      .get(/./)
+      .reply(
+        200,
+        { title: 'adapted title' },
+        { 'Content-Type': 'application/json; charset=utf-8' }
+      );
 
     supertest(app)
       .post('/metadata/')
       .send(requestBody)
       .end((err, res) => {
-        assert.equal(res.body[0].title, 'My title');
+        if (err) throw err;
+        assert.equal(res.body[0].title, 'adapted title');
+        sinon.assert.notCalled(parseHtml.parse);
         done();
       });
   });
 
-  it('checks for matching adaptors after redirects', done => {
+  it('checks for matching adaptors after redirects', function(done) {
     var shortenedUrl = 'http://goo.gl/WNdChy';
 
-    request.get.returns(Promise.resolve({
-      request: { url: testUrl },
-      headers: { 'content-type': 'text/html; charset=utf-8' },
-      text: '<title>My title</title>'
-    }));
+    // redirect
+    nock('http://goo.gl')
+      .get('/WNdChy')
+      .reply(301, 'CONTENT', {
+        'Location': 'https://facebook.com/wilsonpage',
+        'Content-Type': 'text/html; charset=utf-8'
+      });
+
+    // unwrapped url response
+    nock('https://facebook.com/wilsonpage')
+      .get(/./)
+      .reply(200);
+
+    // adaptor response
+    var adaptorUrlStub = nock(adaptorUrl)
+      .get(/./)
+      .reply(200, '<title>wilson page</title>');
 
     supertest(app)
       .post('/metadata/')
-      .send(Object.assign(requestBody, {
-        objects: [{ url: shortenedUrl }]
-      }))
+      .send({
+        objects: [{ url: shortenedUrl }],
+        adaptors: requestBody.adaptors
+      })
 
       .end((err, res) => {
-        assert.equal(res.body[0].title, 'My title');
-        sinon.assert.calledWith(request.get, shortenedUrl);
-        sinon.assert.calledWith(request.get, adaptorUrl + '?url=' + testUrl);
+        assert.equal(res.body[0].title, 'wilson page');
+        assert.equal(adaptorUrlStub.isDone(), true, 'adaptor was used');
         done();
       });
   });

@@ -3,7 +3,7 @@
 const request = require('supertest');
 const app = require('../app');
 
-describe('Frontend', () => {
+describe('frontend', () => {
   it('should redirect to github repo', (done) => {
     request(app)
       .get('/')

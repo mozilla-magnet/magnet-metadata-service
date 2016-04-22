@@ -2,9 +2,9 @@
   "name": "magnet-metadata-service",
   "version": "1.1.0",
   "description": "Physical Web (Alternative) web service implementation",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node index.js",
     "test": "mocha --timeout 20000 --recursive",
     "coverage": "istanbul cover --report html ./node_modules/.bin/_mocha -- --timeout 20000 --recursive"
   },
@@ -21,7 +21,7 @@
     "content-type": "^1.0.1",
     "debug": "^2.2.0",
     "express": "^4.13.3",
-    "magnet-html-parser": "github:mozilla-magnet/magnet-html-parser#v2.0.0",
+    "magnet-html-parser": "github:mozilla-magnet/magnet-html-parser#v2.0.3",
     "morgan": "^1.6.1",
     "superagent": "^1.7.2",
     "winston": "^2.1.1"
@@ -35,6 +35,7 @@
     "eslint": "^2.8.0",
     "istanbul": "^0.4.2",
     "mocha": "^2.4.5",
+    "nock": "^8.0.0",
     "sinon": "^1.17.3",
     "supertest": "^1.1.0"
   },

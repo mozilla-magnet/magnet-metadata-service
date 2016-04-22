@@ -1,79 +1,180 @@
 'use strict';
 
+/**
+ * Dependencies
+ */
+
+var parseHtml = require('magnet-html-parser');
 var app = require('../../../lib/routes/api');
-var request = require('supertest');
-var assert = require('chai').assert;
+var supertest = require('supertest');
+var assert = require('assert');
+var sinon = require('sinon');
+var nock = require('nock');
 
-var basicSites = {
-  objects: [
-    {
-      url: 'https://www.mozilla.org/en-GB/'
-    }
-  ]
-};
+/**
+ * Tests
+ */
 
-describe('Basic parsing', () => {
-  it('should give us compatible output with Google PW service', (done) => {
-    request(app)
+describe('basic parsing', () => {
+  beforeEach(function() {
+    this.sandbox = sinon.sandbox.create();
+  })
+
+  afterEach(function() {
+    this.sandbox.restore();
+    nock.cleanAll();
+  });
+
+  it('should give us compatible output with Google PW service', function(done) {
+    var requestBody = {
+      objects: [{ url: 'https://mozilla.org/' }]
+    };
+
+    // mock response
+    nock('https://mozilla.org')
+      .get('/')
+      .reply(200, '<title>mozilla</title><meta name="description" content="desc"/>');
+
+    supertest(app)
       .post('/metadata/')
-      .send(basicSites)
+      .send(requestBody)
       .expect(200)
-      .end((err, response) => {
-        assert.isNull(err);
+      .end((err, res) => {
+        if (err) throw err;
+        assert.equal(res.body.length, 1);
+        var result = res.body[0];
 
-        var result = JSON.parse(response.text);
-        assert.lengthOf(result, 1);
-
-        result = result[0];
-        // Check basic fields
-        ['id', 'url', 'displayUrl',
-          'title', 'description', 'icon'].forEach((field) => {
-          assert.isNotNull(result[field]);
-        });
+        [
+          'id',
+          'url',
+          'displayUrl',
+          'title',
+          'description'
+        ].forEach(field => assert.ok(result[field]));
 
         assert.equal(result.id, result.url);
         assert.equal(result.id, result.displayUrl);
-
         done();
       });
   });
 
   it('should give information of several sites at once', (done) => {
-    var sites = Object.assign({}, basicSites);
-    sites.objects.push({ url: 'https://www.facebook.com' });
+    var requestBody = {
+      objects: [
+        { url: 'https://mozilla.org/' },
+        { url: 'http://facebook.com/' }
+      ]
+    };
 
-    request(app)
+    // mock response
+    nock('https://mozilla.org')
+      .get('/')
+      .reply(200, '<title>mozilla</title>');
+
+    // mock response
+    nock('http://facebook.com')
+      .get('/')
+      .reply(200, '<title>facebook</title>');
+
+    supertest(app)
       .post('/metadata')
-      .send(sites)
+      .send(requestBody)
       .expect(200)
-      .end((err, response) => {
-        assert.isNull(err);
-
-        var result = JSON.parse(response.text);
-        assert.lengthOf(result, 2);
-
+      .end((err, res) => {
+        if (err) throw err;
+        assert.equal(res.body.length, 2);
+        assert.equal(res.body[0].title, 'mozilla');
+        assert.equal(res.body[1].title, 'facebook');
         done();
       });
   });
 
-  it('should unwrap shorted urls', (done) => {
+  it('should unwrap shorted urls', function(done) {
+    var endUrl = 'https://twitter.com/mepartoconmigo';
     var sites = {
-      objects: [{url: 'http://bit.ly/1Q3Pb6u'}]
+      objects: [{ url: 'http://bit.ly/1Q3Pb6u' }]
     };
-    var originalUrl = 'https://twitter.com/mepartoconmigo';
-    request(app)
+
+    // redirect
+    nock('http://bit.ly')
+      .get('/1Q3Pb6u')
+      .reply(301, 'CONTENT', {
+        'Location': 'https://twitter.com/mepartoconmigo',
+        'Content-Type': 'text/html; charset=utf-8'
+      });
+
+    // final response
+    nock('https://twitter.com')
+      .get('/mepartoconmigo')
+      .reply(200, '<title>Francisco</title>', {
+        'Content-Type': 'text/html; charset=utf-8'
+      });
+
+    supertest(app)
       .post('/metadata')
       .send(sites)
       .expect(200)
-      .end((err, response) => {
-        assert.isNull(err);
+      .end((err, res) => {
+        if (err) throw err;
+        assert.equal(res.body.length, 1);
+        assert.equal(res.body[0].url, endUrl);
+        done();
+      });
+  });
 
-        var result = JSON.parse(response.text);
-        assert.lengthOf(result, 1);
+  it('does not 500 if one url errors', function(done) {
+    this.sandbox.stub(parseHtml, 'parse');
+    parseHtml.parse.returns(Promise.resolve({}));
 
-        result = result[0];
+    nock('https://twitter.com')
+      .get('/mepartoconmigo')
+      .reply(200, 'CONTENT', {
+        'Content-Type': 'text/html; charset=utf-8'
+      });
 
-        assert.equal(result.displayUrl, originalUrl);
+    nock('https://fakecalendar.com')
+      .get('/')
+      .reply(200, 'CONTENT', {
+        'Content-Type': 'text/calendar; charset=utf-8'
+      });
+
+    var requestBody = {
+      objects: [
+        { url: 'https://twitter.com/mepartoconmigo' },
+        { url: 'https://fakecalendar.com/' }
+      ]
+    };
+
+    supertest(app)
+      .post('/metadata/')
+      .send(requestBody)
+      .end((err, res) => {
+        var error = res.body[1].error;
+        assert.ok(error);
+        assert.ok(error.indexOf('unsupported response type') > -1)
+        done();
+      });
+  });
+
+  it('does html-parsing if the service returns HTML', function(done) {
+    this.sandbox.spy(parseHtml, 'parse');
+
+    var requestBody = {
+      objects: [{ url: 'https://facebook.com/wilsonpage' }]
+    };
+
+    nock('https://facebook.com/wilsonpage')
+      .get(/./)
+      .reply(200, '<title>wilson page</title>', {
+        'Content-Type': 'text/html; charset=utf-8'
+      });
+
+    supertest(app)
+      .post('/metadata/')
+      .send(requestBody)
+      .end((err, res) => {
+        assert.equal(res.body[0].title, 'wilson page');
+        sinon.assert.calledOnce(parseHtml.parse);
         done();
       });
   });

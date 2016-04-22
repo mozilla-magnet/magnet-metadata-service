@@ -11,7 +11,7 @@ var basicSites = {
   ]
 };
 
-describe('Api', () => {
+describe('api', () => {
   it('should discard invalid http verbs', (done) => {
     request(app)
       .get('/metadata/')

@@ -4,7 +4,7 @@
  * Dependencies
  */
 
-var exec = require('../lib/processors');
+var exec = require('../lib/routes/api/metadata/processor');
 
 var urls = process.argv.slice(2);
 

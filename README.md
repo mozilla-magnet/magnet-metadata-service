@@ -1,4 +1,4 @@
-# (Another) Physical-Web Web Service [![Build Status](https://travis-ci.org/arcturus/pw-ws.svg?branch=master)](https://travis-ci.org/arcturus/pw-ws)
+# (Another) Physical-Web Web Service [![Build Status](https://travis-ci.org/mozilla-magnet/magnet-metadata-service.svg?branch=master)](https://travis-ci.org/mozilla-magnet/magnet-metadata-service)
 
 This project is an implementation in Nodejs of a [Physical-Web](https://google.github.io/physical-web/) metadata service.
 

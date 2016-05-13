@@ -58,7 +58,7 @@ describe('adaptors', () => {
         if (err) throw err;
         assert.equal(testUrlStub.isDone(), false, 'original url not called');
         assert.equal(adaptorUrlStub.isDone(), true, 'adaptor called');
-        assert.equal(endUrl, '/magnet-facebook-adaptor?url=https://facebook.com/wilsonpage')
+        assert.equal(endUrl, `/magnet-facebook-adaptor?url=${encodeURIComponent('https://facebook.com/wilsonpage')}`);
         assert.equal(res.body[0].title, 'adapted title');
         done();
       });

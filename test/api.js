@@ -1,9 +1,9 @@
 'use strict';
 
-var app = require('../lib/routes/api');
-var request = require('supertest');
+const app = require('../lib/routes/api');
+const request = require('supertest');
 
-var basicSites = {
+const basicSites = {
   objects: [
     {
       url: 'https://www.mozilla.org/en-GB/'

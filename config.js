@@ -1,9 +1,9 @@
-var config = require('./config.json');
+const config = require('./config.json');
 
 // Reconfigure with environment variables.
 // It's important to keep the json keys in
 // lower case.
-var prefix = 'PW_WS_';
+const prefix = 'PW_WS_';
 Object.keys(config).map((key) => {
   return prefix + key.toUpperCase();
 }).forEach((key) => {

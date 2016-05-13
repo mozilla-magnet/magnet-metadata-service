@@ -4,17 +4,17 @@
  * Dependencies
  */
 
-var parseHtml = require('magnet-html-parser');
-var app = require('../../../lib/routes/api');
-var supertest = require('supertest');
-var assert = require('assert');
-var sinon = require('sinon');
-var nock = require('nock');
+const parseHtml = require('magnet-html-parser');
+const app = require('../../../lib/routes/api');
+const supertest = require('supertest');
+const assert = require('assert');
+const sinon = require('sinon');
+const nock = require('nock');
 
-var testUrl = 'https://facebook.com/wilsonpage';
-var adaptorUrl = 'http://box.wilsonpage.me/magnet-facebook-adaptor';
+const testUrl = 'https://facebook.com/wilsonpage';
+const adaptorUrl = 'http://box.wilsonpage.me/magnet-facebook-adaptor';
 
-var requestBody = {
+const requestBody = {
   objects: [ { url: testUrl } ],
   adaptors: [
     {
@@ -39,12 +39,12 @@ describe('adaptors', () => {
   });
 
   it('requests the adaptor url instead', done => {
-    var endUrl;
-    var testUrlStub = nock(testUrl)
+    let endUrl;
+    const testUrlStub = nock(testUrl)
       .get(/./)
       .reply(200);
 
-    var adaptorUrlStub = nock(adaptorUrl)
+    const adaptorUrlStub = nock(adaptorUrl)
       .get(/./)
       .reply(200, function(uri) {
         endUrl = uri;
@@ -91,7 +91,7 @@ describe('adaptors', () => {
   });
 
   it('checks for matching adaptors after redirects', function(done) {
-    var shortenedUrl = 'http://goo.gl/WNdChy';
+    const shortenedUrl = 'http://goo.gl/WNdChy';
 
     // redirect
     nock('http://goo.gl')
@@ -107,7 +107,7 @@ describe('adaptors', () => {
       .reply(200);
 
     // adaptor response
-    var adaptorUrlStub = nock(adaptorUrl)
+    const adaptorUrlStub = nock(adaptorUrl)
       .get(/./)
       .reply(200, '<title>wilson page</title>');
 

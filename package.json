@@ -4,7 +4,9 @@
   "description": "Physical Web (Alternative) web service implementation",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint .",
     "start": "node index.js",
+    "pretest": "npm run lint",
     "test": "mocha --timeout 20000 --recursive",
     "coverage": "istanbul cover --report html ./node_modules/.bin/_mocha -- --timeout 20000 --recursive"
   },
@@ -41,5 +43,13 @@
   },
   "bin": {
     "magnet": "./bin/magnet.js"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mozilla-magnet/magnet-metadata-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mozilla-magnet/magnet-metadata-service/issues"
+  },
+  "homepage": "https://github.com/mozilla-magnet/magnet-metadata-service"
 }

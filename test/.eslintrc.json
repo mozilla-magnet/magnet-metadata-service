@@ -1,11 +1,7 @@
 {
   "extends": "../.eslintrc.json",
-  "globals": {
-    "it": true,
-    "describe": true,
-    "after": true,
-    "before": true,
-    "beforeEach": true,
-    "afterEach": true
+
+  "env": {
+    "mocha": true
   }
 }

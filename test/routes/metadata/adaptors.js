@@ -31,7 +31,7 @@ var requestBody = {
 describe('adaptors', () => {
   beforeEach(function() {
     this.sandbox = sinon.sandbox.create();
-  })
+  });
 
   afterEach(function() {
     this.sandbox.restore();
@@ -48,14 +48,16 @@ describe('adaptors', () => {
       .get(/./)
       .reply(200, function(uri) {
         endUrl = uri;
-        return { title: 'adapted title' }
+        return { title: 'adapted title' };
       });
 
     supertest(app)
       .post('/metadata/')
       .send(requestBody)
       .end((err, res) => {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
         assert.equal(testUrlStub.isDone(), false, 'original url not called');
         assert.equal(adaptorUrlStub.isDone(), true, 'adaptor called');
         assert.equal(endUrl, `/magnet-facebook-adaptor?url=${encodeURIComponent('https://facebook.com/wilsonpage')}`);
@@ -79,7 +81,9 @@ describe('adaptors', () => {
       .post('/metadata/')
       .send(requestBody)
       .end((err, res) => {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
         assert.equal(res.body[0].title, 'adapted title');
         sinon.assert.notCalled(parseHtml.parse);
         done();

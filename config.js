@@ -8,7 +8,7 @@ Object.keys(config).map((key) => {
   return prefix + key.toUpperCase();
 }).forEach((key) => {
   if (process.env[key]) {
-    config[key.substr(prefix.length).toLowerCase()] = process.env[key]
+    config[key.substr(prefix.length).toLowerCase()] = process.env[key];
   }
 });
 

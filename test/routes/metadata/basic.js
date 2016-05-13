@@ -18,7 +18,7 @@ var nock = require('nock');
 describe('basic parsing', () => {
   beforeEach(function() {
     this.sandbox = sinon.sandbox.create();
-  })
+  });
 
   afterEach(function() {
     this.sandbox.restore();
@@ -40,7 +40,9 @@ describe('basic parsing', () => {
       .send(requestBody)
       .expect(200)
       .end((err, res) => {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
         assert.equal(res.body.length, 1);
         var result = res.body[0];
 
@@ -81,7 +83,9 @@ describe('basic parsing', () => {
       .send(requestBody)
       .expect(200)
       .end((err, res) => {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
         assert.equal(res.body.length, 2);
         assert.equal(res.body[0].title, 'mozilla');
         assert.equal(res.body[1].title, 'facebook');
@@ -115,7 +119,9 @@ describe('basic parsing', () => {
       .send(sites)
       .expect(200)
       .end((err, res) => {
-        if (err) throw err;
+        if (err) {
+          throw err;
+        }
         assert.equal(res.body.length, 1);
         assert.equal(res.body[0].url, endUrl);
         done();
@@ -151,7 +157,7 @@ describe('basic parsing', () => {
       .end((err, res) => {
         var error = res.body[1].error;
         assert.ok(error);
-        assert.ok(error.indexOf('unsupported response type') > -1)
+        assert.ok(error.indexOf('unsupported response type') > -1);
         done();
       });
   });

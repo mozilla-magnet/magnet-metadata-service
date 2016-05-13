@@ -3,8 +3,8 @@
  * Dependencies
  */
 
-var express = require('express');
-var morgan = require('morgan');
+const express = require('express');
+const morgan = require('morgan');
 
 module.exports = express()
   .use(morgan('combined'))

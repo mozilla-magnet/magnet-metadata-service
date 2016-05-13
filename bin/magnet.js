@@ -4,9 +4,9 @@
  * Dependencies
  */
 
-var exec = require('../lib/routes/api/metadata/processor');
+const exec = require('../lib/routes/api/metadata/processor');
 
-var urls = process.argv.slice(2);
+const urls = process.argv.slice(2);
 
 Promise.all(urls.map(url => exec(url)))
   .then(result => {

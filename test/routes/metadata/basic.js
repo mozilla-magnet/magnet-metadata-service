@@ -4,12 +4,12 @@
  * Dependencies
  */
 
-var parseHtml = require('magnet-html-parser');
-var app = require('../../../lib/routes/api');
-var supertest = require('supertest');
-var assert = require('assert');
-var sinon = require('sinon');
-var nock = require('nock');
+const parseHtml = require('magnet-html-parser');
+const app = require('../../../lib/routes/api');
+const supertest = require('supertest');
+const assert = require('assert');
+const sinon = require('sinon');
+const nock = require('nock');
 
 /**
  * Tests
@@ -26,7 +26,7 @@ describe('basic parsing', () => {
   });
 
   it('should give us compatible output with Google PW service', function(done) {
-    var requestBody = {
+    const requestBody = {
       objects: [{ url: 'https://mozilla.org/' }]
     };
 
@@ -44,7 +44,7 @@ describe('basic parsing', () => {
           throw err;
         }
         assert.equal(res.body.length, 1);
-        var result = res.body[0];
+        const result = res.body[0];
 
         [
           'id',
@@ -61,7 +61,7 @@ describe('basic parsing', () => {
   });
 
   it('should give information of several sites at once', (done) => {
-    var requestBody = {
+    const requestBody = {
       objects: [
         { url: 'https://mozilla.org/' },
         { url: 'http://facebook.com/' }
@@ -94,8 +94,8 @@ describe('basic parsing', () => {
   });
 
   it('should unwrap shorted urls', function(done) {
-    var endUrl = 'https://twitter.com/mepartoconmigo';
-    var sites = {
+    const endUrl = 'https://twitter.com/mepartoconmigo';
+    const sites = {
       objects: [{ url: 'http://bit.ly/1Q3Pb6u' }]
     };
 
@@ -144,7 +144,7 @@ describe('basic parsing', () => {
         'Content-Type': 'text/calendar; charset=utf-8'
       });
 
-    var requestBody = {
+    const requestBody = {
       objects: [
         { url: 'https://twitter.com/mepartoconmigo' },
         { url: 'https://fakecalendar.com/' }
@@ -155,7 +155,7 @@ describe('basic parsing', () => {
       .post('/metadata/')
       .send(requestBody)
       .end((err, res) => {
-        var error = res.body[1].error;
+        const error = res.body[1].error;
         assert.ok(error);
         assert.ok(error.indexOf('unsupported response type') > -1);
         done();
@@ -165,7 +165,7 @@ describe('basic parsing', () => {
   it('does html-parsing if the service returns HTML', function(done) {
     this.sandbox.spy(parseHtml, 'parse');
 
-    var requestBody = {
+    const requestBody = {
       objects: [{ url: 'https://facebook.com/wilsonpage' }]
     };
 

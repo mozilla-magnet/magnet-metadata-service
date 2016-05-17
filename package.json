@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint .",
     "start": "node index.js",
-    "pretest": "npm run lint",
+    "posttest": "npm run lint",
     "test": "mocha --timeout 20000 --recursive",
     "coverage": "istanbul cover --report html ./node_modules/.bin/_mocha -- --timeout 20000 --recursive"
   },

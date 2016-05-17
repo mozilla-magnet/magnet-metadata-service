@@ -1,15 +1,11 @@
 'use strict';
 
+/**
+ * Dependencies
+ */
+
 const app = require('../lib/routes/api');
 const request = require('supertest');
-
-const basicSites = {
-  objects: [
-    {
-      url: 'https://www.mozilla.org/en-GB/'
-    }
-  ]
-};
 
 describe('api', () => {
   it('should discard invalid http verbs', (done) => {
@@ -27,14 +23,6 @@ describe('api', () => {
       .end(done);
   });
 
-  it('should perform basic analysis', (done) => {
-    request(app)
-      .post('/metadata')
-      .send(basicSites)
-      .expect(200)
-      .end(done);
-  });
-
   // Writing this test realised that the integration with the google
   // service api is broken xD
   // it('should support Physical Web service api', (done) => {
@@ -44,5 +32,4 @@ describe('api', () => {
   //     .expect(200)
   //     .end(done);
   // });
-
 });

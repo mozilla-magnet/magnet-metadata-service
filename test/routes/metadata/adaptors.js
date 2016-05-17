@@ -11,7 +11,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 const nock = require('nock');
 
-const testUrl = 'https://facebook.com/wilsonpage';
+const testUrl = 'https://facebook.com/wilsonpage%3E';
 const adaptorUrl = 'http://box.wilsonpage.me/magnet-facebook-adaptor';
 
 const requestBody = {
@@ -38,90 +38,142 @@ describe('adaptors', () => {
     nock.cleanAll();
   });
 
-  it('requests the adaptor url instead', done => {
-    let endUrl;
-    const testUrlStub = nock(testUrl)
-      .get(/./)
-      .reply(200);
+  describe('returns html', function() {
+    beforeEach(function(done) {
 
-    const adaptorUrlStub = nock(adaptorUrl)
-      .get(/./)
-      .reply(200, function(uri) {
-        endUrl = uri;
-        return { title: 'adapted title' };
-      });
+      // fake adaptor response
+      nock(adaptorUrl)
+        .get(/./)
+        .reply(200, '<title>wilson page</title>');
 
-    supertest(app)
-      .post('/metadata/')
-      .send(requestBody)
-      .end((err, res) => {
-        if (err) {
-          throw err;
-        }
-        assert.equal(testUrlStub.isDone(), false, 'original url not called');
-        assert.equal(adaptorUrlStub.isDone(), true, 'adaptor called');
-        assert.equal(endUrl, `/magnet-facebook-adaptor?url=${encodeURIComponent('https://facebook.com/wilsonpage')}`);
-        assert.equal(res.body[0].title, 'adapted title');
-        done();
-      });
+      supertest(app)
+        .post('/metadata/')
+        .send({
+          objects: [{ url: testUrl }],
+          adaptors: requestBody.adaptors
+        })
+
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
+          this.res = res;
+          done();
+        });
+    });
+
+    it('returns the `originalUrl`', function() {
+      const body = this.res.body[0];
+      assert.equal(body.originalUrl, testUrl);
+    });
+
+    it('returns `displayUrl` as the original url (decoded)', function() {
+      const body = this.res.body[0];
+      assert.equal(body.displayUrl, decodeURIComponent(testUrl));
+    });
+
+    it('returns the `url` as the adaptor url', function() {
+      const body = this.res.body[0];
+      assert.equal(body.url, `${adaptorUrl}?url=${encodeURIComponent(testUrl)}`);
+    });
   });
 
-  it('does no html-parsing if the service returns JSON', function(done) {
-    this.sandbox.spy(parseHtml, 'parse');
+  describe('returns json', function() {
+    beforeEach(function(done) {
+      this.sandbox.spy(parseHtml, 'parse');
 
-    nock(adaptorUrl)
-      .get(/./)
-      .reply(
-        200,
-        { title: 'adapted title' },
-        { 'Content-Type': 'application/json; charset=utf-8' }
-      );
+      this.testUrlStub = nock(testUrl)
+        .get(/./)
+        .reply(200);
 
-    supertest(app)
-      .post('/metadata/')
-      .send(requestBody)
-      .end((err, res) => {
-        if (err) {
-          throw err;
-        }
-        assert.equal(res.body[0].title, 'adapted title');
-        sinon.assert.notCalled(parseHtml.parse);
-        done();
-      });
+      this.adaptorUrlStub = nock(adaptorUrl)
+        .defaultReplyHeaders({
+          'Content-Type': 'application/json; charset=utf-8'
+        })
+
+        .get(/./)
+        .reply(200, uri => {
+          this.endUrl = uri;
+          return { title: 'adapted title' };
+        });
+
+      supertest(app)
+        .post('/metadata/')
+        .send(requestBody)
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
+          this.res = res;
+          done();
+        });
+    });
+
+    it('requests the adaptor url instead', function() {
+      assert.equal(this.testUrlStub.isDone(), false, 'original url not called');
+      assert.equal(this.adaptorUrlStub.isDone(), true, 'adaptor url called');
+      assert.equal(this.endUrl, `/magnet-facebook-adaptor?url=${encodeURIComponent(testUrl)}`);
+      assert.equal(this.res.body[0].title, 'adapted title');
+    });
+
+    it('does no html parsing if the service returns json', function() {
+      assert.equal(this.res.body[0].title, 'adapted title');
+      sinon.assert.notCalled(parseHtml.parse);
+    });
   });
 
-  it('checks for matching adaptors after redirects', function(done) {
-    const shortenedUrl = 'http://goo.gl/WNdChy';
+  describe('after redirects', function() {
+    beforeEach(function(done) {
+      this.shortenedUrl = 'http://goo.gl/WNdChy';
 
-    // redirect
-    nock('http://goo.gl')
-      .get('/WNdChy')
-      .reply(301, 'CONTENT', {
-        'Location': 'https://facebook.com/wilsonpage',
-        'Content-Type': 'text/html; charset=utf-8'
-      });
+      // redirect
+      nock('http://goo.gl')
+        .get('/WNdChy')
+        .reply(301, 'CONTENT', {
+          'Location': testUrl,
+          'Content-Type': 'text/html; charset=utf-8'
+        });
 
-    // unwrapped url response
-    nock('https://facebook.com/wilsonpage')
-      .get(/./)
-      .reply(200);
+      // unwrapped url response
+      nock(testUrl)
+        .get(/./)
+        .reply(200);
 
-    // adaptor response
-    const adaptorUrlStub = nock(adaptorUrl)
-      .get(/./)
-      .reply(200, '<title>wilson page</title>');
+      // adaptor response
+      this.adaptorUrlStub = nock(adaptorUrl)
+        .get(/./)
+        .reply(200, '<title>wilson page</title>');
 
-    supertest(app)
-      .post('/metadata/')
-      .send({
-        objects: [{ url: shortenedUrl }],
-        adaptors: requestBody.adaptors
-      })
+      supertest(app)
+        .post('/metadata/')
+        .send({
+          objects: [{ url: this.shortenedUrl }],
+          adaptors: requestBody.adaptors
+        })
 
-      .end((err, res) => {
-        assert.equal(res.body[0].title, 'wilson page');
-        assert.equal(adaptorUrlStub.isDone(), true, 'adaptor was used');
-        done();
-      });
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
+          this.res = res;
+          done();
+        });
+    });
+
+    it('it uses matching adaptors', function() {
+      assert.equal(this.res.body[0].title, 'wilson page');
+      assert.equal(this.adaptorUrlStub.isDone(), true, 'adaptor was used');
+    });
+
+    it('returns the `originalUrl` before redirects and adaptors', function() {
+      assert.equal(this.res.body[0].originalUrl, this.shortenedUrl);
+    });
+
+    it('returns the `unadaptedUrl` before adaptors', function() {
+      assert.equal(this.res.body[0].unadaptedUrl, testUrl);
+    });
   });
 });

@@ -184,4 +184,41 @@ describe('basic parsing', () => {
         done();
       });
   });
+
+  // Not sure if this is a requirement.
+  // Supporting this breaks lots of other things.
+  describe.skip('unencoded urls', function() {
+    beforeEach(function(done) {
+      const self = this;
+
+      this.path = '/venue/Billy’s+Place/20+E.+Perry+St.,+second+floor';
+      this.sandbox.spy(parseHtml, 'parse');
+
+      const requestBody = {
+        objects: [{ url: `https://dosavannahcalendar.sched.org${this.path}` }]
+      };
+
+      nock('https://dosavannahcalendar.sched.org')
+        .get(/./)
+        .reply(200, function(uri) {
+          self.requestPath = uri;
+          return '<title>title</title>';
+        });
+
+      supertest(app)
+        .post('/metadata/')
+        .send(requestBody)
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
+          done();
+        });
+    });
+
+    it('encodes uri before request', function() {
+      assert.equal(this.requestPath, encodeURI(this.path));
+    });
+  });
 });

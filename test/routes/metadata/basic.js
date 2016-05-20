@@ -93,11 +93,42 @@ describe('basic parsing', () => {
         if (err) {
           throw err;
         }
+
         assert.equal(res.body.length, 2);
         assert.equal(res.body[0].title, 'mozilla');
         assert.equal(res.body[1].title, 'facebook');
         done();
       });
+  });
+
+  describe('no parsable content', function() {
+    beforeEach(function(done) {
+      const requestBody = {
+        objects: [{ url: 'https://mozilla.org/' }]
+      };
+
+      // mock response
+      nock('https://mozilla.org')
+        .get('/')
+        .reply(200, 'unparsable jibberish');
+
+      supertest(app)
+        .post('/metadata')
+        .send(requestBody)
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
+          this.res = res;
+          done();
+        });
+    });
+
+    it('errors if a title can not be found', function() {
+      assert.ok(this.res.body[0].error);
+      assert.equal(this.res.body[0].error, 'empty');
+    });
   });
 
   it('should unwrap shorted urls', function(done) {
@@ -209,7 +240,7 @@ describe('basic parsing', () => {
         });
     });
 
-    it('returns an error for the 404 result', function() {
+    it('returns an error when `url` is undefined', function() {
       assert.equal(this.res.body[0].error, 'url undefined');
     });
   });

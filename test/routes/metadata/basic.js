@@ -11,6 +11,13 @@ const assert = require('assert');
 const sinon = require('sinon');
 const nock = require('nock');
 
+const testRequestBody = {
+  objects: [
+    { url: 'https://mozilla.org/' },
+    { url: 'http://facebook.com/' }
+  ]
+};
+
 /**
  * Tests
  */
@@ -122,10 +129,89 @@ describe('basic parsing', () => {
         if (err) {
           throw err;
         }
+
         assert.equal(res.body.length, 1);
         assert.equal(res.body[0].url, endUrl);
         done();
       });
+  });
+
+  it('protects against too many redirects', function(done) {
+    const url = 'http://bit.ly/1Q3Pb6u';
+    const MAX_REDIRECTS = 5;
+    const sites = {
+      objects: [{ url: url }]
+    };
+
+    nock(url)
+      .get(/./)
+      .times(MAX_REDIRECTS + 1)
+      .reply(301, 'CONTENT', {
+        'Location': url, // << recursive
+        'Content-Type': 'text/html; charset=utf-8'
+      });
+
+    supertest(app)
+      .post('/metadata')
+      .send(sites)
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          throw err;
+        }
+
+        assert.equal(res.body[0].error, 'max redirects reached');
+        done();
+      });
+  });
+
+  describe('404', function() {
+    beforeEach(function(done) {
+
+      // mock response
+      nock('https://mozilla.org')
+        .get('/')
+        .reply(200, '<title>mozilla</title>');
+
+      // mock response
+      nock('http://facebook.com')
+        .get('/')
+        .reply(404, 'error message');
+
+      supertest(app)
+        .post('/metadata/')
+        .send(testRequestBody)
+        .end((err, res) => {
+          this.res = res;
+          done();
+        });
+    });
+
+    it('returns an error for the 404 result', function() {
+      const results = this.res.body;
+      assert.equal(results[0].title, 'mozilla');
+      assert.ok(results[1].error.indexOf('404') > -1);
+    });
+  });
+
+  describe('undefined urls', function() {
+    beforeEach(function(done) {
+      const body = {
+        objects: [{ url: '' }]
+      };
+
+      supertest(app)
+        .post('/metadata/')
+        .send(body)
+        .end((err, res) => {
+          this.res = res;
+          done();
+        });
+    });
+
+    it('returns an error for the 404 result', function() {
+      assert.equal(this.res.body[0].error, 'url undefined');
+    });
   });
 
   it('does not 500 if one url errors', function(done) {

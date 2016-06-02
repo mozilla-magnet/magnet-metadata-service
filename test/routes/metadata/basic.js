@@ -104,7 +104,7 @@ describe('basic parsing', () => {
   });
 
   describe('no parsable content', function() {
-    beforeEach(function(done) {
+    it('errors if a title or html embed can not be found', function(done) {
       const requestBody = {
         objects: [{ url: 'https://mozilla.org/' }]
       };
@@ -122,10 +122,64 @@ describe('basic parsing', () => {
             throw err;
           }
 
-          this.res = res;
+          assert.ok(res.body[0].error);
+          assert.equal(res.body[0].error, 'empty');
           done();
         });
     });
+
+    it('doesn\'t error if a title is found, but without html content', function(done) {
+      const requestBody = {
+        objects: [{ url: 'https://mozilla.org/' }]
+      };
+
+      // mock response
+      nock('https://mozilla.org')
+        .get('/')
+        .reply(200, '<title>Hello World</title>');
+
+      supertest(app)
+        .post('/metadata')
+        .send(requestBody)
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
+          assert.ok(!res.body[0].error);
+          assert.equal('Hello World', res.body[0].title);
+          done();
+        });
+    });
+
+    it('doesn\'t error if an embed is found, but title is missing', function(done) {
+      const requestBody = {
+        objects: [{ url: 'https://mozilla.org/' }]
+      };
+
+      nock('https://mozilla.org')
+        .get('/mockoembed.json')
+        .reply(200, JSON.stringify({type: 'video', html: '<img src="" />' }));
+
+      // mock response
+      nock('https://mozilla.org')
+        .get('/')
+        .reply(200, '<link type="application/json+oembed" href="https://mozilla.org/mockoembed.json" />');
+
+      supertest(app)
+        .post('/metadata')
+        .send(requestBody)
+        .end((err, res) => {
+          if (err) {
+            throw err;
+          }
+
+          assert.ok(!res.body[0].error);
+          assert.equal('<img src="" />', res.body[0].embed.html);
+          done();
+        });
+    });
+
   });
 
   it('should unwrap shorted urls', function(done) {

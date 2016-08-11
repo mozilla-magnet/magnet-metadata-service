@@ -183,7 +183,7 @@ describe('basic parsing', () => {
   });
 
   it('should unwrap shorted urls', function(done) {
-    const endUrl = 'https://twitter.com/mepartoconmigo';
+    const endUrl = 'https://francisco.com';
     const sites = {
       objects: [{ url: 'http://bit.ly/1Q3Pb6u' }]
     };
@@ -192,13 +192,13 @@ describe('basic parsing', () => {
     nock('http://bit.ly')
       .get('/1Q3Pb6u')
       .reply(301, 'CONTENT', {
-        'Location': 'https://twitter.com/mepartoconmigo',
+        'Location': 'https://francisco.com',
         'Content-Type': 'text/html; charset=utf-8'
       });
 
     // final response
-    nock('https://twitter.com')
-      .get('/mepartoconmigo')
+    nock('https://francisco.com')
+      .get('/')
       .reply(200, '<title>Francisco</title>', {
         'Content-Type': 'text/html; charset=utf-8'
       });
@@ -334,10 +334,10 @@ describe('basic parsing', () => {
     this.sandbox.spy(parseHtml, 'parse');
 
     const requestBody = {
-      objects: [{ url: 'https://facebook.com/wilsonpage' }]
+      objects: [{ url: 'https://wilsonpage.co.uk' }]
     };
 
-    nock('https://facebook.com/wilsonpage')
+    nock('https://wilsonpage.co.uk')
       .get(/./)
       .reply(200, '<title>wilson page</title>', {
         'Content-Type': 'text/html; charset=utf-8'

@@ -353,6 +353,72 @@ describe('basic parsing', () => {
       });
   });
 
+  describe('twitter username', function() {
+    describe('no redirect', function() {
+      beforeEach(function(done) {
+        const requestBody = {
+          objects: [{ url: 'https://wilsonpage.co.uk?magnet_twitter_username=@wilsonpage' }]
+        };
+
+        nock('https://wilsonpage.co.uk')
+          .get(/./)
+          .reply(200, '<title>wilson page</title>', {
+            'Content-Type': 'text/html; charset=utf-8'
+          });
+
+        supertest(app)
+          .post('/metadata/')
+          .send(requestBody)
+          .end((err, res) => {
+            this.result = res.body;
+            done();
+          });
+      });
+
+      it('returns the twitter username', function() {
+        assert.equal(this.result[0].twitterUsername, 'wilsonpage');
+      });
+    });
+
+    describe('with redirect', function() {
+      beforeEach(function(done) {
+        const endUrl = 'https://francisco.com/?magnet_twitter_username=arcturus';
+        const sites = {
+          objects: [{ url: 'http://bit.ly/1Q3Pb6u' }]
+        };
+
+        // redirect
+        nock('http://bit.ly')
+          .get('/1Q3Pb6u')
+          .reply(301, 'CONTENT', {
+            'Location': endUrl,
+            'Content-Type': 'text/html; charset=utf-8'
+          });
+
+        // final response
+        nock('https://francisco.com')
+          .get('/?magnet_twitter_username=arcturus')
+          .reply(200, '<title>Francisco</title>', {
+            'Content-Type': 'text/html; charset=utf-8'
+          });
+
+        supertest(app)
+          .post('/metadata')
+          .send(sites)
+          .expect(200)
+          .end((err, res) => {
+            if (err) { throw err; }
+            this.result = res.body;
+            done();
+          });
+      });
+
+      it('returns the twitter username', function() {
+        assert.equal(this.result[0].twitterUsername, 'arcturus');
+      });
+    });
+  });
+
   // Not sure if this is a requirement.
   // Supporting this breaks lots of other things.
   describe.skip('unencoded urls', function() {
